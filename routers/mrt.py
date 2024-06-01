@@ -40,9 +40,12 @@ async def get_mrts():
         mycursor.close()
         mydb.close()
 
+
         # print(data)
         data = [i[0] for i in data]
         return {"data": data}
 
     except Exception as e:
+        mydb.close()
         raise HTTPException(status_code=500, detail={"error": True, "message": "伺服器內部錯誤"})
+    

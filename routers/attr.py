@@ -100,6 +100,7 @@ async def get_attractions(
 
             
     except Exception as e:
+        mydb.close()
         raise HTTPException(status_code=500, detail= {"error": True, "message": "伺服器內部錯誤"})
 
 
@@ -139,7 +140,7 @@ async def get_attraction(attractionId: int = Path(..., description="景點編號
       
 
         mycursor.close()
-        mydb.close()
+        mydb.close
 
         # print(data)
 
@@ -152,7 +153,7 @@ async def get_attraction(attractionId: int = Path(..., description="景點編號
 
     except Exception as e:    
         # print(f"出錯: {e}")
-
+        mydb.close()
         raise HTTPException(status_code=500, detail={"error": True, "message": "伺服器內部錯誤"})
     
 
