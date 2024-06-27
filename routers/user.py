@@ -21,6 +21,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/auth")
 http_bearer = HTTPBearer()
 
 user = APIRouter()
+book = APIRouter()
+
 
 class SuccessResponse(BaseModel):
     ok: bool = True
@@ -43,11 +45,34 @@ class SignInResponse(BaseModel):
 
 class UserAuthInfo(BaseModel):
     id: int = 1
+    name: str = "test"
     email: EmailStr ="test@gmail.com"
-    password: str = "test"
 
 class UserAuthInfoObject(BaseModel):
     data: UserAuthInfo
+
+class BookingPost(BaseModel):
+    attractionId: int = 10
+    date: str = "2022/01/31"
+    time: str  = "afternoon"
+    price: int = 2500
+
+class Attraction(BaseModel):
+    id: int = 10
+    name: str = "平安鐘"
+    address: str = "臺北市大安區忠孝東路 4 段"
+    image: str = "https://yourdomain.com/images/attraction/10.jpg"
+
+
+class BookingInfo(BaseModel):
+    attraction: Attraction
+    date: str = "2022-01-31"
+    time: str = "afternoon"
+    price: int = 2000
+
+class BookingInfoList(BaseModel):
+    data: BookingInfo
+    
 
 
 # 驗證密碼
@@ -200,7 +225,7 @@ async def get_decode_token(credentials: HTTPBasicCredentials = Depends(http_bear
 async def get_encode_token(user: SignInUser):
     try:
         user = authenticate_user(user.email, user.password)
-    
+
         if not user:
             return ErrorResponse(message="帳號或密碼錯誤")
         
@@ -223,4 +248,150 @@ async def get_encode_token(user: SignInUser):
         return {"token": access_token}
 
     except Exception as e:
+        # print(e)
+        raise HTTPException(status_code=500, detail="伺服器內部錯誤")
+    
+
+    
+
+@book.get("/booking", summary= "取得尚未確認下單的預定行程", responses={
+    200: {"model": BookingInfoList, "description": "尚未確認下單的預定行程資料，null 表示沒有資料"},
+    403: {"model": ErrorResponse, "description": "未登入系統，拒絕存取"}
+})
+async def get_booking(credentials: HTTPBasicCredentials = Depends(http_bearer)):
+    try:
+        token = credentials.credentials
+        email = await get_current_user(token)
+        
+        cnxpool = mysql.connector.pooling.MySQLConnectionPool(**dbconfig)
+        cnx = cnxpool.get_connection()
+        cursor = cnx.cursor()
+
+        sql_string = "SELECT id FROM member WHERE email = %s"
+        cursor.execute(sql_string, (email,))
+        data = cursor.fetchone()        
+
+        if not data:
+            raise HTTPException(status_code=400, detail="未登入")
+        
+        # 獲取預定行程資訊
+        sql_string = "SELECT booking.date, booking.time, booking.price, attractions.id AS AttractionID, attractions.name AS AttractionName, attractions.address, (SELECT CONCAT(GROUP_CONCAT(CONCAT(pictures.url))) FROM pictures WHERE pictures.attr_id = attractions.id) AS urls FROM booking INNER JOIN attractions ON booking.AttractionID = attractions.id WHERE booking.MemberID = %s;"
+
+    
+        cursor.execute(sql_string, (data[0],))
+        booking = cursor.fetchone()
+
+        if not booking:
+            return {"data": None}
+
+        booking = {
+            "data": {
+                "attraction" : {
+                    "id": booking[3],
+                    "name": booking[4],
+                    "address": booking[5],
+                    "image": booking[6].split(",")[0]
+                },
+                "date": booking[0],
+                "time": booking[1],
+                "price": booking[2]
+                }
+        }
+            
+
+        return booking
+
+       
+
+    except Exception as e:
+        # print(e)
+        raise HTTPException(status_code=500, detail="伺服器內部錯誤")
+
+@book.post("/booking", summary= "建立新的預定行程", responses={
+    200: {"model": BookingPost, "description": "建立成功"},
+    400: {"model": ErrorResponse, "description": "建立失敗，輸入不正確或其他原因"},
+    403: {"model": ErrorResponse, "description": "未登入系統，拒絕存取"}
+})
+async def post_booking(form: BookingPost, credentials: HTTPBasicCredentials = Depends(http_bearer)):
+    try:
+        token = credentials.credentials
+        email = await get_current_user(token)
+        
+        cnxpool = mysql.connector.pooling.MySQLConnectionPool(**dbconfig)
+        cnx = cnxpool.get_connection()
+        cursor = cnx.cursor()
+
+        sql_string = "SELECT id FROM member WHERE email = %s"
+        cursor.execute(sql_string, (email,))
+        data = cursor.fetchone()
+    
+        if not data:
+            raise HTTPException(status_code=403, detail="未登入")
+        
+        #  更新預定行程資訊
+        if form.date is None:
+            raise HTTPException(status_code=400, detail="請輸入日期")
+        
+        if form.time is None:
+            raise HTTPException(status_code=400, detail="請輸入時間")
+        
+        if form.price is None:
+            raise HTTPException(status_code=400, detail="請輸入價格")
+
+        sql_string = """
+        INSERT INTO booking (MemberID, AttractionID, Date, Time, Price) 
+        VALUES (%s, %s, %s, %s, %s) 
+        ON DUPLICATE KEY UPDATE 
+            AttractionID = VALUES(AttractionID), 
+            Date = VALUES(Date), 
+            Time = VALUES(Time), 
+            Price = VALUES(Price);
+        """
+        val = (data[0], form.attractionId, form.date, form.time, form.price)        
+        cursor.execute(sql_string, val)
+        cnx.commit()
+        cursor.close()
+        cnx.close()
+
+
+        return {"attractionId": form.attractionId, "date": form.date, "time": form.time, "price": form.price}
+        
+       
+    except Exception as e:
+        # print(e)
+        raise HTTPException(status_code=500, detail="伺服器內部錯誤")
+
+    
+
+@book.delete("/booking", summary= "刪除目前的預定行程", responses={
+    200: {"model": SuccessResponse, "description": "刪除成功"},
+    403: {"model": ErrorResponse, "description": "未登入系統，拒絕存取"}
+})
+async def delete_booking(credentials: HTTPBasicCredentials = Depends(http_bearer)):
+    try: 
+        token = credentials.credentials
+        email = await get_current_user(token)
+        
+        cnxpool = mysql.connector.pooling.MySQLConnectionPool(**dbconfig)
+        cnx = cnxpool.get_connection()
+        cursor = cnx.cursor()
+
+        sql_string = "SELECT id FROM member WHERE email = %s"
+        cursor.execute(sql_string, (email,))
+        data = cursor.fetchone()
+
+        if not data:
+            raise ErrorResponse(message="未登入")
+        
+        #  刪除預定行程資訊
+        sql_string = "DELETE FROM booking WHERE MemberID = %s"
+        cursor.execute(sql_string, (data[0],))
+        cnx.commit()
+        cursor.close()
+        cnx.close()
+
+        return {"ok": True}
+    
+    except Exception as e:
+        # print(e)
         raise HTTPException(status_code=500, detail="伺服器內部錯誤")

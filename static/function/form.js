@@ -16,6 +16,39 @@ function closeSignUpForm() {
   document.getElementById("signup-form-bg").style.visibility = "hidden";
 }
 
+function showErrorLogin(errorMessage) {
+  const errorMsg = document.getElementById("login-message");
+  errorMsg.textContent = errorMessage;
+  errorMsg.style.color = "red";
+  errorMsg.style.display = "block";
+}
+
+function showErrorMessage(errorMessage) {
+  const errorMsg = document.getElementById("signup-message");
+  errorMsg.textContent = errorMessage;
+  errorMsg.style.color = "red";
+  errorMsg.style.display = "block";
+}
+
+function showSuccessMessage(successMessage) {
+  const successMsg = document.getElementById("signup-message");
+  successMsg.textContent = successMessage;
+  successMsg.style.color = "green";
+  successMsg.style.display = "block";
+}
+
+function showLogoutButton() {
+  document.getElementById("login-button").style.display = "none";
+  document.getElementById("logout-button").style.display = "block";
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  document.getElementById("login-button").style.display = "block";
+  document.getElementById("logout-button").style.display = "none";
+  window.location.href = "http://127.0.0.1:8000/";
+}
+
 async function submitLoginForm(event) {
   event.preventDefault();
   const email = document.getElementById("input-email").value;
@@ -72,70 +105,6 @@ async function submitSignUpForm(event) {
       showSuccessMessage("註冊成功!");
     } else {
       showErrorMessage(data.message);
-    }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-function showErrorLogin(errorMessage) {
-  const errorMsg = document.getElementById("login-message");
-  errorMsg.textContent = errorMessage;
-  errorMsg.style.color = "red";
-  errorMsg.style.display = "block";
-}
-
-function showErrorMessage(errorMessage) {
-  const errorMsg = document.getElementById("signup-message");
-  errorMsg.textContent = errorMessage;
-  errorMsg.style.color = "red";
-  errorMsg.style.display = "block";
-}
-
-function showSuccessMessage(successMessage) {
-  const successMsg = document.getElementById("signup-message");
-  successMsg.textContent = successMessage;
-  successMsg.style.color = "green";
-  successMsg.style.display = "block";
-}
-
-function showLogoutButton() {
-  document.getElementById("login-button").style.display = "none";
-  document.getElementById("logout-button").style.display = "block";
-}
-
-function logout() {
-  localStorage.removeItem("token");
-  document.getElementById("login-button").style.display = "block";
-  document.getElementById("logout-button").style.display = "none";
-  window.location.href = "http://127.0.0.1:8000/";
-}
-
-const token = localStorage.getItem("token");
-fetchUser(token);
-
-async function fetchUser(token) {
-  try {
-    if (!token) {
-      return;
-    }
-    const response = await fetch("http://127.0.0.1:8000/api/user/auth", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log(data.data);
-    if (data.data !== null) {
-      showLogoutButton();
-    } else {
-      logout();
     }
   } catch (error) {
     console.error("Error:", error);

@@ -11,8 +11,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/styles/style.css" />
-    <script src="/static/function/script.js" defer></script>
     <script src="/static/function/form.js" defer></script>
+    <script src="/static/function/userAuth.js" defer></script>
+    <script src="/static/function/script.js" defer></script>
+    <script src="/static/function/booking.js" defer></script>
     <link rel="preload" as="script" href="/static/function/script.js" />
     <link rel="preload" as="style" href="/static/styles/style.css" />
 
@@ -24,10 +26,10 @@
       <div class="container">
         <div class="nav">
           <div class="nav logo">
-            <a href="http://127.0.0.1:8000">台北一日遊</a>
+            <a href="/">台北一日遊</a>
           </div>
           <div class="menu">
-            <a>預定行程</a>
+            <a id="booking-button" onclick="showBookingCart()">預定行程</a>
             <a
               id="login-button"
               style="display: block"

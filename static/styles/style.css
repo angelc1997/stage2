@@ -639,6 +639,7 @@
   border-radius: 50%;
   margin-right: 4px;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .attr-time input[type="radio"]:checked + label:before {
@@ -676,6 +677,7 @@
   border: none;
   color: #ffffff;
   line-height: 16px;
+  cursor: pointer;
 }
 
 hr {
@@ -714,6 +716,140 @@ hr {
   font-size: 16px;
   font-weight: 400;
   color: #666666;
+}
+
+.booking-title {
+  max-width: 1000px;
+  margin: 94px auto 0;
+}
+
+.booking-title-msg {
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 16px;
+  color: #666666;
+}
+
+.booking-empty {
+  display: none;
+  margin-top: 30px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #666666;
+}
+
+.booking-container,
+.booking-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  position: relative;
+  margin-top: 30px;
+}
+
+.booking-image {
+  margin-right: 30px;
+}
+
+.booking-image img {
+  width: 250px;
+  height: 200px;
+  object-fit: cover;
+}
+
+.booking-subtitle {
+  max-width: 700px;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #448899;
+}
+
+.booking-icon img {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+.booking {
+  font-weight: 700;
+  font-size: 16px;
+  color: #666666;
+  margin-top: 10px;
+}
+
+.booking-text {
+  margin-left: 5px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #666666;
+}
+
+.booking-contact-title,
+.booking-payment-title {
+  font-weight: 700;
+  font-size: 19px;
+  color: #666666;
+}
+
+.input-group {
+  margin-top: 15px;
+}
+
+.booking-contact-msg {
+  margin-top: 20px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #666666;
+}
+
+.input-group label {
+  font-weight: 400;
+  font-size: 16px;
+  color: #666666;
+}
+
+.input-group input {
+  width: 200px;
+  height: 16px;
+  border-radius: 5px;
+  border: 1px solid #e8e8e8;
+  padding: 10px;
+  font-weight: 500;
+  font-size: 16px;
+  color: #000000;
+}
+
+.booking-submit {
+  width: 980px;
+  display: block;
+  text-align: right;
+}
+
+.booking-sum {
+  font-weight: 700;
+  font-size: 16px;
+  color: #666666;
+  text-align: right;
+  height: 20px;
+}
+
+.booking-submit button {
+  width: 173px;
+  padding: 10px 20px;
+  background-color: #448899;
+  margin: 22px 0;
+  border: none;
+  color: #ffffff;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+  line-height: 16px;
+  cursor: pointer;
 }
 
 /* RWD */
@@ -759,6 +895,34 @@ hr {
   .des-container {
     max-width: 600px;
   }
+
+  .booking-title {
+    width: 600px;
+  }
+
+  .booking-container,
+  .booking-wrap {
+    max-width: 600px;
+  }
+
+  .booking-wrap {
+    display: block;
+  }
+
+  .booking-info {
+    margin-top: 30px;
+  }
+
+  .booking-image img {
+    width: 600px;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .booking-icon img {
+    position: static;
+    float: right;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -782,6 +946,21 @@ hr {
 
   .des-container {
     max-width: 480px;
+  }
+
+  .booking-title {
+    width: 480px;
+  }
+
+  .booking-container,
+  .booking-wrap {
+    max-width: 480px;
+  }
+
+  .booking-image img {
+    width: 480px;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
@@ -812,6 +991,21 @@ hr {
 
   .des-container {
     max-width: 360px;
+  }
+
+  .booking-title {
+    width: 360px;
+  }
+
+  .booking-container,
+  .booking-wrap {
+    max-width: 360px;
+  }
+
+  .booking-image img {
+    width: 360px;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
@@ -848,5 +1042,52 @@ hr {
 
   .attr-submit {
     margin-bottom: 15px;
+  }
+
+  .booking-title {
+    width: 340px;
+  }
+
+  .booking-container,
+  .booking-wrap {
+    max-width: 340px;
+  }
+
+  .booking-image img {
+    width: 340px;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 3;
+}
+
+.loader {
+  position: absolute;
+  top: 20%;
+  left: 43%;
+  transform: translateX(-50%);
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: load 1s linear infinite;
+}
+
+@keyframes load {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

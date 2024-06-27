@@ -240,10 +240,6 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, options);
 
-// Initialize Data
-fetchTags();
-fetchFirstPage();
-
 // Form Login
 window.addEventListener("load", function () {
   const token = this.localStorage.getItem("token");
@@ -252,14 +248,6 @@ window.addEventListener("load", function () {
   }
 });
 
-function showLogoutButton() {
-  document.getElementById("login-button").style.display = "none";
-  document.getElementById("logout-button").style.display = "block";
-}
-
-function logout() {
-  localStorage.removeItem("token");
-  document.getElementById("login-button").style.display = "block";
-  document.getElementById("logout-button").style.display = "none";
-  window.location.href = "http://127.0.0.1:8000/";
-}
+// Initialize Data
+fetchTags();
+fetchFirstPage();

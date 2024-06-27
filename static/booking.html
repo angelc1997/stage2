@@ -1,11 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booking</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles/style.css" />
+    <script src="/static/function/form.js" defer></script>
+    <script src="/static/function/booking.js" defer></script>
+    <script src="/static/function/href.js" defer></script>
+    <!-- <link rel="preload" as="script" href="/static/function/script.js" /> -->
+    <!-- <link rel="preload" as="style" href="/static/styles/style.css" /> -->
+    <title>Booking</title>
+  </head>
+  <body>
+
+    <!-- Navigation -->
+    <div class="navbar">
+      <div class="container">
+        <div class="nav">
+          <div class="nav logo">
+            <a href="/">台北一日遊</a>
+          </div>
+          <div class="menu">
+            <a id="booking-button" onclick="showBookingCart()">預定行程</a>
+            <a
+              id="login-button"
+              style="display: block"
+              onclick="showLoginForm();"
+              >登入/註冊</a
+            >
+            <a id="logout-button" style="display: none" onclick="logout();"
+              >登出系統</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+
+    <div class="booking-title">
+      <div class="booking-title-msg">您好，<span id="booking-username"></span>，待預訂的行程如下：</div>
+      <div class="booking-empty">目前沒有任何待預訂的行程</div>
+    </div>
+    
   
-</body>
+    <div class="booking-wrap">
+      <div class="booking-image">
+      </div>
+
+      <div class="booking-info">
+        <div class="booking-subtitle">
+          台北一日遊：<span id="booking-titlename"></span>
+        </div>
+        <div class="booking">
+          日期：<span class="booking-text" id="booking-date"></span>
+        </div>
+        <div class="booking">
+          時間：<span class="booking-text" id="booking-time"
+            ></span
+          >
+        </div>
+        <div class="booking">
+          費用：<span class="booking-text" id="booking-price"
+            ></span
+          >
+        </div>
+        <div class="booking">
+          地點：<span class="booking-text" id="booking-address"
+            ></span
+          >
+        </div>
+        <div class="booking-icon" onclick="deleteBooking()">
+          <img src="../static/imgs/icon-delete.png" alt="delete" />
+        </div>
+      </div>
+    </div>
+    <hr />
+
+    <div class="booking-container">
+      <div class="booking-contact-form">
+        <div class="booking-contact-title">您的聯絡資訊</div>
+
+        <div class="input-group">
+          <label for="contact-name">聯絡姓名：</label>
+          <input type="text" id="contact-name" />
+        </div>
+
+        <div class="input-group">
+          <label for="contact-email">連絡信箱：</label>
+          <input type="text" id="contact-email" />
+        </div>
+
+        <div class="input-group">
+          <label for="contact-phone">聯絡電話：</label>
+          <input type="text" id="contact-phone" />
+        </div>
+
+        <div class="booking-contact-msg">
+          請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。
+        </div>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="booking-container">
+      <div class="booking-payment-form">
+        <div class="booking-payment-title">信用卡付款資訊</div>
+
+        <form>
+        <div class="input-group">
+          <label for="credit-number">卡片號碼：</label>
+          <input
+            type="password"
+            id="credit-number"
+            placeholder="**** **** **** ****"
+            autocomplete="on"
+          />
+        </div>
+        <div class="input-group">
+          <label for="credit-date">過期時間：</label>
+          <input type="text" id="credit-date" placeholder="MM/YY" />
+        </div>
+
+        <div class="input-group">
+          <label for="credit-cvc">驗證密碼：</label>
+          <input type="text" id="credit-cvc" placeholder="CVV" />
+        </div>
+      </div>
+    </div>
+  </form>
+
+    <hr />
+    <div class="booking-container">
+      <div class="booking-submit">
+        <div class="booking-sum">
+          總價：<span id="booking-sum">新台幣2000元</span>
+        </div>
+        <button>確認訂購並付款</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-text">COPYRIGHT © 2024 台北一日遊</div>
+    </div>
+
+    <div class="overlay">
+      <div class="loader"></div>
+    </div>
+    
+
+    <script>
+        addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "http://127.0.0.1:8000/";
+        } else {
+          showLogoutButton();
+        }
+      });
+    </script>
+  </body>
 </html>
